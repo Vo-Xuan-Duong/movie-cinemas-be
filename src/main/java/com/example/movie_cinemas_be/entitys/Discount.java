@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -19,6 +21,13 @@ public class Discount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String code;
+    private double quantity;
     private double discountAmount = 0;
     private double discountRate = 0;//giảm theo %
+    private Status status;
+    private LocalDate createDate;
+    public enum Status{
+        DANGHOATDONG,
+        NGUNGHOATDONG
+    }
 }

@@ -1,12 +1,14 @@
 package com.example.movie_cinemas_be.service;
 
 import com.example.movie_cinemas_be.dtos.request.UserCreateRequest;
+import com.example.movie_cinemas_be.dtos.request.UserUpdateRequest;
 import com.example.movie_cinemas_be.dtos.response.UserResponse;
+import com.example.movie_cinemas_be.entitys.Role;
 import com.example.movie_cinemas_be.entitys.User;
-import com.example.movie_cinemas_be.enums.Role;
 import com.example.movie_cinemas_be.exception.CustomException;
 import com.example.movie_cinemas_be.exception.ErrorCode;
 import com.example.movie_cinemas_be.mapper.MapperUser;
+import com.example.movie_cinemas_be.reponsitory.RoleRepository;
 import com.example.movie_cinemas_be.reponsitory.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +27,16 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final MapperUser mapperUser;
+    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     public PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-    public UserService(UserRepository userRepository, MapperUser mapperUser) {
+    public UserService(UserRepository userRepository, MapperUser mapperUser, RoleRepository roleRepository, RoleService roleService) {
         this.userRepository = userRepository;
         this.mapperUser = mapperUser;
+        this.roleRepository = roleRepository;
+        this.roleService = roleService;
     }
 
     public UserResponse createUser(UserCreateRequest userCreateRequest) {
@@ -39,22 +45,26 @@ public class UserService {
             throw new CustomException(ErrorCode.USER_EXISTS_EXCEPTION);
         }
         User users = mapperUser.mapToUser(userCreateRequest);
+        users.setPhone(userCreateRequest.getPhone());
 
         users.setPassword(passwordEncoder.encode(users.getPassword()));
-//        HashSet<String> roles = new HashSet<>();
-//        roles.add(Role.USER.name());
-//
-//        users.setRoles(roles);
+
+        List<Role>  roles = userCreateRequest.getRoleId().stream().map(role -> roleRepository.findById(role).get()).collect(Collectors.toList());
+
+        users.setRoles(roles);
         return mapperUser.mapToUserResponse(userRepository.save(users));
     }
 
-    public UserResponse updateUser(long user_id , UserCreateRequest userCreateRequest) {
+    public UserResponse updateUser(long user_id , UserUpdateRequest userCreateRequest) {
         User user_update = userRepository.findById(user_id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         user_update.setUsername(userCreateRequest.getUsername());
-        user_update.setPassword(passwordEncoder.encode(user_update.getPassword()));
-//        Set<String> roles = user_update.getRoles();
-//        roles.add(user_update.getRoles().iterator().next());
-//        user_update.setRoles(roles);
+
+        if (!passwordEncoder.matches(user_update.getPassword(), passwordEncoder.encode(userCreateRequest.getPassword()))) {
+            user_update.setPassword(passwordEncoder.encode(userCreateRequest.getPassword()));
+        }
+
+        List<Role>  roles = userCreateRequest.getRoleId().stream().map(role -> roleRepository.findById(role).get()).collect(Collectors.toList());
+        user_update.setRoles(roles);
 
         return  mapperUser.mapToUserResponse(userRepository.save(user_update));
     }

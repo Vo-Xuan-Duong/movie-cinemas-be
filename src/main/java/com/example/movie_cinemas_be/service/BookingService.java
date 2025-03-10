@@ -6,10 +6,7 @@ import com.example.movie_cinemas_be.dtos.response.DiscountResponse;
 import com.example.movie_cinemas_be.entitys.*;
 import com.example.movie_cinemas_be.exception.CustomException;
 import com.example.movie_cinemas_be.exception.ErrorCode;
-import com.example.movie_cinemas_be.reponsitory.BookingReponsitory;
-import com.example.movie_cinemas_be.reponsitory.SeatRepository;
-import com.example.movie_cinemas_be.reponsitory.ShowTimeRepository;
-import com.example.movie_cinemas_be.reponsitory.UserRepository;
+import com.example.movie_cinemas_be.reponsitory.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,6 +33,7 @@ public class BookingService {
     private final ShowTimeRepository showTimeRepository;
     private final DiscountService discountService;
     private final EmailService emailService;
+    private final DiscountRepository discountRepository;
     private UserService userService;
     private TicketService ticketService;
     private UserRepository userRepository;
@@ -50,7 +48,7 @@ public class BookingService {
                           DiscountService discountService,
                           EmailService emailService,
                           UserRepository userRepository,
-                          QRCodeService qrCodeService) {
+                          QRCodeService qrCodeService, DiscountRepository discountRepository) {
         this.bookingReponsitory = bookingReponsitory;
         this.userService = userService;
         this.ticketService = ticketService;
@@ -61,6 +59,7 @@ public class BookingService {
         this.emailService = emailService;
         this.userRepository = userRepository;
         this.qrCodeService = qrCodeService;
+        this.discountRepository = discountRepository;
     }
 
     public Page<BookingResponse> getAllBookings(Pageable  pageable) {
@@ -116,10 +115,17 @@ public class BookingService {
         if (discountCode == null || discountCode.isEmpty()) {
             return totalPrice;
         }
-        DiscountResponse discount = discountService.getDiscountByCode(discountCode);
-        return discount.getDiscountAmount() == 0
-                ? totalPrice * (1 - discount.getDiscountRate() / 100)
-                : totalPrice - discount.getDiscountAmount();
+        Discount discount = discountRepository.findDiscountByCode(discountCode);
+        double quantityUsed = discount.getQuantity();
+        if( quantityUsed > 0 ) {
+            discount.setQuantity(quantityUsed - 1);
+            Discount discountUp = discountRepository.save(discount);
+            return discountUp.getDiscountAmount() == 0
+                    ? totalPrice * (1 - discount.getDiscountRate() / 100)
+                    : totalPrice - discount.getDiscountAmount();
+        }
+        return totalPrice;
+
     }
 
     public BookingResponse getBookingByBookingCode(String bookingCode) {

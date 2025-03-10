@@ -9,6 +9,5 @@ public interface MapperMovie {
 
     MovieResponse mapToMovieResponse(Movie movie);
 
-    Movie mapToMovies(MovieRequest movieRequest);
 
 }

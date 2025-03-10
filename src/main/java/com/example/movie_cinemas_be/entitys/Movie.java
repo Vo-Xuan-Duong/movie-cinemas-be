@@ -8,7 +8,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -20,27 +24,64 @@ public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     private String title;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
-
     private int duration;//thời lượng phim(phút)
+
+    //thể loại
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Genre> genres;
 
     @Column(columnDefinition = "JSON")
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> genre;//thể loại
+    private List<String> cast;
 
-    private String rating;//xếp hạng đánh giá phim
+    private float vote_average;//xếp hạng đánh giá phim
+    private double vote_count;
 
-    private String director;
+    private double popularity; // sự phổ biến
+    private String type;
+    private String language;
 
-    private String posterUrl;
+    private int year;
 
-    private String trailerUrl;
+    @Enumerated(EnumType.STRING)
+    private MovieStatus status;
 
-    private String releaseDate;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Compani> companies = new ArrayList<>();
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Country> country = new ArrayList<>();
+
+    private String writer;
+
+    @Enumerated(EnumType.STRING)
+    private Certification certification;
+
+    private String backdrop;
+    private String poster;
+    private String trailer;
+    private LocalDate releaseDate;
+    private LocalDate endDate;
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
     private List<ShowTime> showTimes;
+
+    public enum MovieStatus{
+        DANGCHIEU,
+        SAPCHIEU,
+        NGUNGCHIEU,
+        TAMNGUNG
+    }
+
+    public enum Certification{
+        P ,//(phổ thông)
+        C13 ,//(trên 13 tuổi),
+        C16, //(trên 16 tuổi),
+        C18 //(trên 18 tuổi)
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.movie_cinemas_be.controller;
 
 import com.example.movie_cinemas_be.dtos.ResponseCustom;
 import com.example.movie_cinemas_be.dtos.request.UserCreateRequest;
+import com.example.movie_cinemas_be.dtos.request.UserUpdateRequest;
 import com.example.movie_cinemas_be.dtos.response.UserResponse;
 import com.example.movie_cinemas_be.service.UserService;
 import jakarta.validation.Valid;
@@ -58,11 +59,11 @@ public class UserController {
     }
 
 
-    @PutMapping("/update")
-    public ResponseCustom<UserResponse> updateUser(@RequestBody @Valid UserCreateRequest userCreateRequest) {
+    @PutMapping("/update/{userId}")
+    public ResponseCustom<UserResponse> updateUser(@RequestBody @Valid UserUpdateRequest userCreateRequest, @PathVariable Long user_id) {
         return ResponseCustom.<UserResponse>builder()
                 .message("Successfully updated user")
-
+                .data(userService.updateUser(user_id, userCreateRequest))
                 .build();
     }
 

@@ -3,6 +3,7 @@ package com.example.movie_cinemas_be.controller;
 import com.example.movie_cinemas_be.dtos.ResponseCustom;
 import com.example.movie_cinemas_be.dtos.request.MovieRequest;
 import com.example.movie_cinemas_be.dtos.response.MovieResponse;
+import com.example.movie_cinemas_be.entitys.Movie;
 import com.example.movie_cinemas_be.service.MovieService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,20 @@ public class MovieController {
         return ResponseCustom.<MovieResponse>builder()
                 .message("Successfully created movie")
                 .data(movieService.createMovie(movieRequest))
+                .build();
+    }
+
+    @GetMapping("/playing_now")
+    public ResponseCustom<List<MovieResponse>> playingNow() {
+        return ResponseCustom.<List<MovieResponse>>builder()
+                .data(movieService.getAllMoviesStatus(Movie.MovieStatus.DANGCHIEU))
+                .build();
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseCustom<List<MovieResponse>> upcoming() {
+        return ResponseCustom.<List<MovieResponse>>builder()
+                .data(movieService.getAllMoviesStatus(Movie.MovieStatus.SAPCHIEU))
                 .build();
     }
 

@@ -4,6 +4,8 @@ import com.example.movie_cinemas_be.dtos.ResponseCustom;
 import com.example.movie_cinemas_be.dtos.request.DiscountRequest;
 import com.example.movie_cinemas_be.dtos.response.DiscountResponse;
 import com.example.movie_cinemas_be.service.DiscountService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public class DiscountController {
         this.discountService = discountService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseCustom<DiscountResponse> createDiscount(@RequestBody DiscountRequest discountRequest) {
         return ResponseCustom.<DiscountResponse>builder()
                 .message("Successfully created discount")
@@ -27,10 +29,10 @@ public class DiscountController {
     }
 
     @GetMapping("/alldiscount")
-    public ResponseCustom<List<DiscountResponse>> getAllDiscounts() {
-        return ResponseCustom.<List<DiscountResponse>>builder()
+    public ResponseCustom<Page<DiscountResponse>> getAllDiscounts(Pageable pageable) {
+        return ResponseCustom.<Page<DiscountResponse>>builder()
                 .message("Successfully retrieved all discounts")
-                .data(discountService.getAllDiscounts())
+                .data(discountService.getAllDiscounts(pageable))
                 .build();
     }
 
@@ -42,7 +44,7 @@ public class DiscountController {
                 .build();
     }
 
-    @PutMapping("/{discount_id}")
+    @PutMapping("/update/{discount_id}")
     public ResponseCustom<DiscountResponse> updateDiscount(@PathVariable long discount_id, @RequestBody DiscountRequest discountRequest) {
         return ResponseCustom.<DiscountResponse>builder()
                 .message("Successfully updated discount")
@@ -50,8 +52,9 @@ public class DiscountController {
                 .build();
     }
 
-    @DeleteMapping("/{discount_id}")
+    @DeleteMapping("/delete/{discount_id}")
     public ResponseCustom<Void> deleteDiscount(@PathVariable long discount_id) {
+        discountService.deleteDiscount(discount_id);
         return ResponseCustom.<Void>builder()
                 .message("Successfully deleted discount")
                 .build();

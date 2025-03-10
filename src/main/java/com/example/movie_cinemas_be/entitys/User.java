@@ -30,7 +30,7 @@ public class User {
     private String phone;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    private List<Role> roles;
 
     private LocalDate created_at = LocalDate.now();
 
