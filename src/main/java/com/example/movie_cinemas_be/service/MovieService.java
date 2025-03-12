@@ -1,6 +1,7 @@
 package com.example.movie_cinemas_be.service;
 
 import com.example.movie_cinemas_be.dtos.request.MovieRequest;
+import com.example.movie_cinemas_be.dtos.request.MovieRequestAdd;
 import com.example.movie_cinemas_be.dtos.response.MovieResponse;
 import com.example.movie_cinemas_be.entitys.Genre;
 import com.example.movie_cinemas_be.entitys.Movie;
@@ -33,34 +34,72 @@ public class MovieService {
         this.movieCreateService = movieCreateService;
     }
 
-    public MovieResponse createMovie(MovieRequest movieRequest) {
+    public MovieResponse updateDataMovie(MovieRequestAdd movieRequestAdd) {
 
-        if(movieRepository.findByTitle(movieRequest.getTitle()).isPresent()) {
+        if(movieRepository.findByTitle(movieRequestAdd.getTitle()).isPresent()) {
 
             throw new CustomException(ErrorCode.MOVIE_EXIST_EXCEPTION);
         }
         Movie movie = new  Movie();
-        movie.setTitle(movieRequest.getTitle());
-        movie.setBackdrop(movieRequest.getBackdrop());
-        movie.setPoster(movieRequest.getPoster());
-        movie.setReleaseDate(movieRequest.getReleaseDate());
-        movie.setCast(movieRequest.getCast());
-        movie.setCompanies(movieRequest.getCompanies().stream().map(companiResquest -> movieCreateService.createCompani(companiResquest)).collect(Collectors.toList()));
-        movie.setCountry(movieRequest.getCountry().stream().map(countryResquest -> movieCreateService.createCountry(countryResquest)).collect(Collectors.toList()));
-        movie.setCertification(movieRequest.getCertification());
-        movie.setDescription(movieRequest.getDescription());
-        movie.setDuration(movieRequest.getDuration());
-        List<Genre> genres = movieRequest.getGenres().stream().map(genreId -> genreService.getGenreById(genreId)).collect(Collectors.toList());
+        movie.setTitle(movieRequestAdd.getTitle());
+        movie.setBackdrop(movieRequestAdd.getBackdrop());
+        movie.setPoster(movieRequestAdd.getPoster());
+        movie.setReleaseDate(movieRequestAdd.getReleaseDate());
+        movie.setCast(movieRequestAdd.getCast());
+        movie.setCompanies(movieRequestAdd.getCompanies().stream().map(companiResquest -> movieCreateService.createCompani(companiResquest)).collect(Collectors.toList()));
+        movie.setCountry(movieRequestAdd.getCountry().stream().map(countryResquest -> movieCreateService.createCountry(countryResquest)).collect(Collectors.toList()));
+        movie.setCertification(movieRequestAdd.getCertification());
+        movie.setDescription(movieRequestAdd.getDescription());
+        movie.setDuration(movieRequestAdd.getDuration());
+        List<Genre> genres = movieRequestAdd.getGenres().stream().map(genreId -> genreService.getGenreById(genreId)).collect(Collectors.toList());
         movie.setGenres(genres);
-        movie.setPoster(movieRequest.getPoster());
-        movie.setReleaseDate(movieRequest.getReleaseDate());
-        movie.setLanguage( movieRequest.getLanguage());
-        movie.setYear(movieRequest.getReleaseDate().getYear());
-        movie.setCertification(movieRequest.getCertification());
-        movie.setVote_average(movieRequest.getVote_average());
-        movie.setVote_count(movieRequest.getVote_count());
-        movie.setTrailer(movieRequest.getTrailer());
-        movie.setStatus(Movie.MovieStatus.NGUNGCHIEU);
+        movie.setPopularity(movieRequestAdd.getPopularity());
+        movie.setPoster(movieRequestAdd.getPoster());
+        movie.setReleaseDate(movieRequestAdd.getReleaseDate());
+        movie.setLanguage( movieRequestAdd.getLanguage());
+        movie.setYear(movieRequestAdd.getReleaseDate().getYear());
+        movie.setCertification(movieRequestAdd.getCertification());
+        movie.setVote_average(movieRequestAdd.getVote_average());
+        movie.setVote_count(movieRequestAdd.getVote_count());
+        movie.setTrailer(movieRequestAdd.getTrailer());
+        movie.setSupport(movieRequestAdd.getSupport());
+        movie.setType(movieRequestAdd.getType());
+        movie.setStatus(movieRequestAdd.getStatus());
+
+        log.info("Creating movie successful");
+        return mapperMovie.mapToMovieResponse(movieRepository.save(movie));
+    }
+
+    public MovieResponse createMovie(MovieRequest movieRequestAdd) {
+
+        if(movieRepository.findByTitle(movieRequestAdd.getTitle()).isPresent()) {
+
+            throw new CustomException(ErrorCode.MOVIE_EXIST_EXCEPTION);
+        }
+        Movie movie = new  Movie();
+        movie.setTitle(movieRequestAdd.getTitle());
+        movie.setBackdrop(movieRequestAdd.getBackdrop());
+        movie.setPoster(movieRequestAdd.getPoster());
+        movie.setReleaseDate(movieRequestAdd.getReleaseDate());
+        movie.setCast(movieRequestAdd.getCast());
+        movie.setCompanies(movieRequestAdd.getCompanies().stream().map(companiResquest -> movieCreateService.getCompaniById(companiResquest)).collect(Collectors.toList()));
+        movie.setCountry(movieRequestAdd.getCountry().stream().map(countryResquest -> movieCreateService.getCountryById(countryResquest)).collect(Collectors.toList()));
+        movie.setCertification(movieRequestAdd.getCertification());
+        movie.setDescription(movieRequestAdd.getDescription());
+        movie.setDuration(movieRequestAdd.getDuration());
+        List<Genre> genres = movieRequestAdd.getGenres().stream().map(genreId -> genreService.getGenreById(genreId)).collect(Collectors.toList());
+        movie.setGenres(genres);
+        movie.setPoster(movieRequestAdd.getPoster());
+        movie.setReleaseDate(movieRequestAdd.getReleaseDate());
+        movie.setLanguage( movieRequestAdd.getLanguage());
+        movie.setYear(movieRequestAdd.getReleaseDate().getYear());
+        movie.setCertification(movieRequestAdd.getCertification());
+        movie.setVote_average(movieRequestAdd.getVote_average());
+        movie.setVote_count(movieRequestAdd.getVote_count());
+        movie.setTrailer(movieRequestAdd.getTrailer());
+        movie.setSupport(movieRequestAdd.getSupport());
+        movie.setType(movieRequestAdd.getType());
+        movie.setStatus(movieRequestAdd.getStatus());
 
         log.info("Creating movie successful");
         return mapperMovie.mapToMovieResponse(movieRepository.save(movie));
@@ -84,10 +123,34 @@ public class MovieService {
         return mapperMovie.mapToMovieResponse(movie);
     }
 
-    public MovieResponse updateMovie(long id , MovieRequest movieUpdateRequest) {
-        Movie updateMovie = movieRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
+    public MovieResponse updateMovie(long id , MovieRequest movieRequestAdd) {
+        Movie movie = movieRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
 
-        return mapperMovie.mapToMovieResponse(movieRepository.save(updateMovie));
+        movie.setTitle(movieRequestAdd.getTitle());
+        movie.setBackdrop(movieRequestAdd.getBackdrop());
+        movie.setPoster(movieRequestAdd.getPoster());
+        movie.setReleaseDate(movieRequestAdd.getReleaseDate());
+        movie.setCast(movieRequestAdd.getCast());
+        movie.setCompanies(movieRequestAdd.getCompanies().stream().map(companiResquest -> movieCreateService.getCompaniById(companiResquest)).collect(Collectors.toList()));
+        movie.setCountry(movieRequestAdd.getCountry().stream().map(countryResquest -> movieCreateService.getCountryById(countryResquest)).collect(Collectors.toList()));
+        movie.setCertification(movieRequestAdd.getCertification());
+        movie.setDescription(movieRequestAdd.getDescription());
+        movie.setDuration(movieRequestAdd.getDuration());
+        List<Genre> genres = movieRequestAdd.getGenres().stream().map(genreId -> genreService.getGenreById(genreId)).collect(Collectors.toList());
+        movie.setGenres(genres);
+        movie.setPoster(movieRequestAdd.getPoster());
+        movie.setReleaseDate(movieRequestAdd.getReleaseDate());
+        movie.setLanguage( movieRequestAdd.getLanguage());
+        movie.setYear(movieRequestAdd.getReleaseDate().getYear());
+        movie.setCertification(movieRequestAdd.getCertification());
+        movie.setVote_average(movieRequestAdd.getVote_average());
+        movie.setVote_count(movieRequestAdd.getVote_count());
+        movie.setTrailer(movieRequestAdd.getTrailer());
+        movie.setSupport(movieRequestAdd.getSupport());
+        movie.setType(movieRequestAdd.getType());
+        movie.setStatus(movieRequestAdd.getStatus());
+
+        return mapperMovie.mapToMovieResponse(movieRepository.save(movie));
     }
 
     public void deleteMovie(long id) {

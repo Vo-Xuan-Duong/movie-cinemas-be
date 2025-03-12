@@ -29,11 +29,18 @@ public class Room {
 
     private int capacity;
 
-    private String roomType;
+    @Enumerated(EnumType.STRING)
+    private RoomType roomType;
 
     private LocalDate creationDate = LocalDate.now();
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Seat> seats;
+
+    public enum RoomType {
+        TYPE_2D,
+        TYPE_3D,
+        TYPE_4D
+    }
 
 }

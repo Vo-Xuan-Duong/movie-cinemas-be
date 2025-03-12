@@ -25,7 +25,8 @@ public class MovieResponse {
     private float vote_average;
     private double vote_count; //xếp hạng đánh giá phim
     private double popularity; // sự phổ biến
-    private String type;
+    private Room.RoomType type;
+    private Movie.Support support;
     private String language;
     private String year;
     private Movie.MovieStatus status;

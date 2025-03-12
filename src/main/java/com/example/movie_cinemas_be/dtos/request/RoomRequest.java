@@ -1,5 +1,6 @@
 package com.example.movie_cinemas_be.dtos.request;
 
+import com.example.movie_cinemas_be.entitys.Room;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoomRequest {
     private String room_name;
-    private String room_type;
+    private Room.RoomType room_type;
     private int seat_quantity;
 }

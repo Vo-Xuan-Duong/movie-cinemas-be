@@ -1,6 +1,7 @@
 package com.example.movie_cinemas_be.service;
 
 import com.example.movie_cinemas_be.dtos.request.RoomRequest;
+import com.example.movie_cinemas_be.dtos.request.SeatRequest;
 import com.example.movie_cinemas_be.dtos.response.RoomResponse;
 import com.example.movie_cinemas_be.dtos.response.SeatResponse;
 import com.example.movie_cinemas_be.entitys.Cinema;
@@ -112,6 +113,11 @@ public class RoomService {
         }
     }
 
+    public List<SeatResponse> getAllSeatByRoom(long room_id) {
+        List<Seat> seats = seatRepository.findSeatsByRoom(room_id);
+        return  seats.stream().map(seat -> convertToSeatResponse(seat)).collect(Collectors.toList());
+    }
+
     public void dynamicRemoveAllSeatFromRoom(long roomId){
         Room room = roomRepository.findById(roomId).get();
         List<Seat> seats = seatRepository.findByRoom(room);
@@ -125,6 +131,30 @@ public class RoomService {
         List<Seat> seats = seatRepository.findByRoom(room);
         return seats.stream().map(seat -> convertToSeatResponse(seat)).collect(Collectors.toList());
     }
+
+    public SeatResponse deleteSeatById(long seat_id){
+        Seat seat = seatRepository.findById(seat_id).get();
+        seatRepository.deleteById(seat_id);
+        Seat seatNew = new Seat();
+        seatNew.setRoom(seat.getRoom());
+       return convertToSeatResponse(seatNew);
+    }
+
+    public SeatResponse updateSeatType(long seat_id, Seat.SeatType type){
+        Seat seat = seatRepository.findById(seat_id).get();
+        seat.setSeatType(type);
+        return convertToSeatResponse(seatRepository.save(seat));
+    }
+
+    public SeatResponse createSeatByRoomId(long room_id, SeatRequest seatRequest){
+        Seat seat = new Seat();
+        seat.setRoom(roomRepository.findById(room_id).get());
+        seat.setSeatNumber(seatRequest.getSeatNumber());
+        seat.setSeatType(seatRequest.getSeatType());
+        return convertToSeatResponse(seatRepository.save(seat));
+    }
+
+
 
 
     public List<SeatResponse> getAvailableSeats(long showTimeId){
@@ -172,6 +202,7 @@ public class RoomService {
         return SeatResponse.builder()
                 .seatNumber(seat.getSeatNumber())
                 .id(seat.getId())
+                .roomId(seat.getRoom().getId())
                 .seatType(seat.getSeatType())
                 .build();
     }
@@ -180,6 +211,7 @@ public class RoomService {
         return SeatResponse.builder()
                 .seatNumber(seat.getSeatNumber())
                 .id(seat.getId())
+                .roomId(seat.getRoom().getId())
                 .seatType(seat.getSeatType())
                 .seatStatus(seatStatus)
                 .build();

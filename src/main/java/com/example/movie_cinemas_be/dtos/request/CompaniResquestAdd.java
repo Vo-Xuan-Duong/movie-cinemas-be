@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CountryResquest {
-    private String iso;
+public class CompaniResquestAdd {
+
+    private Long id;
     private String name;
+    private String origin_country;
+    private String logo_path;
 }

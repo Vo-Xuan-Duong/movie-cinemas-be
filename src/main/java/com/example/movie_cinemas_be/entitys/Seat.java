@@ -14,11 +14,7 @@ public class Seat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-
     private String seatNumber;
-
-    //room
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
@@ -26,10 +22,11 @@ public class Seat {
     @Enumerated(EnumType.STRING)
     private SeatType  seatType = SeatType.STANDARD;
 
+    private double price;
+    private double totalPrice;
+
     public enum SeatType {
         STANDARD, VIP, COUPLE
-
-
     }
 
     public enum SeatStatus{

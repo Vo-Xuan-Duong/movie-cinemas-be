@@ -1,6 +1,5 @@
 package com.example.movie_cinemas_be.dtos.request;
 
-import com.example.movie_cinemas_be.entitys.Discount;
 import com.example.movie_cinemas_be.entitys.Movie;
 import com.example.movie_cinemas_be.entitys.Room;
 import lombok.AllArgsConstructor;
@@ -11,11 +10,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieRequest {
+public class MovieRequestAdd {
 
     private String title;
     private String description;
@@ -28,8 +26,8 @@ public class MovieRequest {
     private Room.RoomType type;
     private Movie.Support support;
     private String language;
-    private List<String> country = new ArrayList<>();
-    private List<Long> companies =  new ArrayList<>();
+    private List<CountryResquestAdd> country = new ArrayList<>();
+    private List<CompaniResquestAdd> companies =  new ArrayList<>();
     private String writer;
     private Movie.Certification certification;
     private String backdrop;

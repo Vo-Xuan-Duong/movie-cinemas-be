@@ -2,6 +2,7 @@ package com.example.movie_cinemas_be.controller;
 
 import com.example.movie_cinemas_be.dtos.ResponseCustom;
 import com.example.movie_cinemas_be.dtos.request.MovieRequest;
+import com.example.movie_cinemas_be.dtos.request.MovieRequestAdd;
 import com.example.movie_cinemas_be.dtos.response.MovieResponse;
 import com.example.movie_cinemas_be.entitys.Movie;
 import com.example.movie_cinemas_be.service.MovieService;
@@ -60,10 +61,10 @@ public class MovieController {
     }
 
     @PutMapping("/update/{movie_id}")
-    public ResponseCustom<MovieResponse> updateMovie(@PathVariable("movie_id") long movieId, @RequestBody MovieRequest movieRequest) {
+    public ResponseCustom<MovieResponse> updateMovie(@PathVariable("movie_id") long movieId, @RequestBody MovieRequest movieRequestAdd) {
         return ResponseCustom.<MovieResponse>builder()
                 .message("Successfully updated movie with id " + movieId)
-                .data(movieService.updateMovie(movieId, movieRequest))
+                .data(movieService.updateMovie(movieId, movieRequestAdd))
                 .build();
     }
 

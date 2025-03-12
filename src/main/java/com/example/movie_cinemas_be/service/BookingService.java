@@ -116,15 +116,10 @@ public class BookingService {
             return totalPrice;
         }
         Discount discount = discountRepository.findDiscountByCode(discountCode);
-        double quantityUsed = discount.getQuantity();
-        if( quantityUsed > 0 ) {
-            discount.setQuantity(quantityUsed - 1);
-            Discount discountUp = discountRepository.save(discount);
-            return discountUp.getDiscountAmount() == 0
+
+        return discount.getDiscountAmount() == 0
                     ? totalPrice * (1 - discount.getDiscountRate() / 100)
                     : totalPrice - discount.getDiscountAmount();
-        }
-        return totalPrice;
 
     }
 

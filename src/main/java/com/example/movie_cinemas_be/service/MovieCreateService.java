@@ -1,14 +1,15 @@
 package com.example.movie_cinemas_be.service;
 
-import com.example.movie_cinemas_be.dtos.request.CompaniResquest;
-import com.example.movie_cinemas_be.dtos.request.CountryResquest;
+import com.example.movie_cinemas_be.dtos.request.CompaniResquestAdd;
+import com.example.movie_cinemas_be.dtos.request.CountryResquestAdd;
 import com.example.movie_cinemas_be.entitys.Compani;
 import com.example.movie_cinemas_be.entitys.Country;
 import com.example.movie_cinemas_be.reponsitory.CompaniRepository;
 import com.example.movie_cinemas_be.reponsitory.CountryRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,35 +23,54 @@ public class MovieCreateService {
         this.countryRepository = countryRepository;
     }
 
-    public Compani createCompani(CompaniResquest companiRequest){
-
+    public Compani createCompani(CompaniResquestAdd companiRequest) {
         Long id = companiRequest.getId();
-        if (companiRequest.getId() == null) {
+        if (id == null) {
             throw new IllegalArgumentException("ID compani must not be null");
         }
-        if (companiRepository.existsById(id)) {
+
+        Optional<Compani> existingCompani = companiRepository.findById(id);
+        if (existingCompani.isPresent()) {
             System.out.println("Compani with id " + id + " already exists");
-            return companiRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Compani with ID " + id + " not found"));
+            return existingCompani.get(); // An toàn vì đã kiểm tra isPresent()
         } else {
             Compani companiEntity = new Compani();
             companiEntity.setId(id);
             companiEntity.setName(companiRequest.getName());
             companiEntity.setLogo_path(companiRequest.getLogo_path());
             companiEntity.setOrigin_country(companiRequest.getOrigin_country());
-
             return companiRepository.save(companiEntity);
         }
     }
 
-    public Country createCountry(CountryResquest country){
-        log.debug("Country : " + country.toString());
-        if(countryRepository.existsById(country.getIso())){
-            System.out.println("Country with id " + country.getIso() + " already exists");
-            return countryRepository.findById(country.getIso()).get();
-        }else {
+    public Compani getCompaniById(Long id) {
+        Optional<Compani> existingCompani = companiRepository.findById(id);
+        if (existingCompani.isPresent()) {
+            return existingCompani.get();
+        }
+        return null;
+    }
+
+    public Country getCountryById(String iso) {
+        Optional<Country> existingCountry = countryRepository.findById(iso);
+        if (existingCountry.isPresent()) {
+            return existingCountry.get();
+        }
+        return null;
+    }
+
+    public Country createCountry(CountryResquestAdd country) {
+        log.debug("Country : {}", country.toString());
+        String iso = country.getIso();
+
+        Optional<Country> existingCountry = countryRepository.findById(iso);
+        if (existingCountry.isPresent()) {
+            System.out.println("Country with id " + iso + " already exists");
+            return existingCountry.get(); // An toàn vì đã kiểm tra isPresent()
+        } else {
             Country countryEntity = new Country();
             countryEntity.setName(country.getName());
-            countryEntity.setIso(country.getIso());
+            countryEntity.setIso(iso);
             return countryRepository.save(countryEntity);
         }
     }

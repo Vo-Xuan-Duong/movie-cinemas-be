@@ -1,4 +1,4 @@
-package com.example.movie_cinemas_be.dtos.response;
+package com.example.movie_cinemas_be.dtos.request;
 
 import com.example.movie_cinemas_be.entitys.Seat;
 import lombok.AllArgsConstructor;
@@ -7,13 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class SeatResponse {
-    private long id;
-    private long roomId;
+@AllArgsConstructor
+@NoArgsConstructor
+public class SeatRequest {
     private String seatNumber;
     private Seat.SeatType seatType;
-    private Seat.SeatStatus seatStatus;
 }

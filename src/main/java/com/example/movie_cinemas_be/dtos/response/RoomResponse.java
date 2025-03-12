@@ -1,5 +1,6 @@
 package com.example.movie_cinemas_be.dtos.response;
 
+import com.example.movie_cinemas_be.entitys.Room;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ public class RoomResponse {
     private long id;
     private String name;
     private int capacity;
-    private String type;
+    private Room.RoomType type;
     private LocalDate date;
 
 }

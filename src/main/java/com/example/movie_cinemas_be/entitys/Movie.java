@@ -43,8 +43,14 @@ public class Movie {
     private double vote_count;
 
     private double popularity; // sự phổ biến
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private Room.RoomType type;
+
     private String language;
+
+    @Enumerated(EnumType.STRING)
+    private Support support;
 
     private int year;
 
@@ -83,5 +89,11 @@ public class Movie {
         C16, //(trên 16 tuổi),
         C18 //(trên 18 tuổi)
     }
+
+    public enum Support{
+        LONGTIENG,
+        PHUDE
+    }
+
 
 }
