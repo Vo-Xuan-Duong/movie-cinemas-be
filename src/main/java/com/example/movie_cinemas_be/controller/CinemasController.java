@@ -3,7 +3,10 @@ package com.example.movie_cinemas_be.controller;
 import com.example.movie_cinemas_be.dtos.ResponseCustom;
 import com.example.movie_cinemas_be.dtos.request.CinemasRequest;
 import com.example.movie_cinemas_be.dtos.response.CinemaResponse;
+import com.example.movie_cinemas_be.dtos.response.RoleResponse;
+import com.example.movie_cinemas_be.dtos.response.RoomResponse;
 import com.example.movie_cinemas_be.service.CinemasService;
+import com.example.movie_cinemas_be.service.RoomService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +18,11 @@ import java.util.List;
 public class CinemasController {
 
     private final CinemasService cinemasService;
+    private final RoomService roomService;
 
-    public CinemasController(CinemasService cinemasService) {
+    public CinemasController(CinemasService cinemasService, RoomService roomService) {
         this.cinemasService = cinemasService;
+        this.roomService = roomService;
     }
 
     @PostMapping("/create")
@@ -34,6 +39,14 @@ public class CinemasController {
         return ResponseCustom.<Page<CinemaResponse>>builder()
                 .data(cinemasService.getAllCinemas(pageable))
                 .message("Successfully retrieved all cinemas")
+                .build();
+    }
+
+    @GetMapping("/allCinemas")
+    public ResponseCustom<List<CinemaResponse>> getAllCinemas() {
+        return ResponseCustom.<List<CinemaResponse>>builder()
+                .message("Successfully retrieved all cinemas")
+                .data(cinemasService.getAllCinemas())
                 .build();
     }
 
@@ -58,6 +71,14 @@ public class CinemasController {
         cinemasService.deleteCinemas(cinema_id);
         return ResponseCustom.builder()
                 .message("Successfully deleted cinema")
+                .build();
+    }
+
+    @GetMapping("/{cinemaId}/rooms")
+    public ResponseCustom<List<RoomResponse>> getAllRooms(@PathVariable Long cinemaId) {
+        return ResponseCustom.<List<RoomResponse>>builder()
+                .message("Successfully retrieved all rooms")
+                .data(roomService.getAllRoomByCinema(cinemaId))
                 .build();
     }
 }

@@ -16,9 +16,11 @@ import com.example.movie_cinemas_be.reponsitory.RoomRepository;
 import com.example.movie_cinemas_be.reponsitory.ShowTimeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Comparator;
@@ -75,6 +77,22 @@ public class ShowTimeService {
                 .collect(Collectors.toList());
     }
 
+    public Page<ShowTimeResponse> getShowTimesByRoomIdAndShowDate(long roomId, LocalDate showDate, Pageable pageable) {
+        Page<ShowTime> showTimes = showTimeRepository.findShowTimeByRoom_IdAndShowDate(roomId, showDate , pageable);
+        if (showTimes.getTotalElements() > 0) {
+            return showTimes.map(showTime -> convertToShowTimeResponse(showTime));
+        }
+        return null;
+    }
+
+    public Page<ShowTimeResponse> getShowTimesByShowDate(LocalDate showDate, Pageable pageable) {
+        Page<ShowTime> showTimes = showTimeRepository.findShowTimeByShowDate(showDate, pageable);
+        if (showTimes.getTotalElements() > 0) {
+            return showTimes.map(showTime -> convertToShowTimeResponse(showTime));
+        }
+        return null;
+    }
+
     public Page<ShowTimeResponse> getAllShowTimes(Pageable pageable){
         Page<ShowTime> showTimeResponseList = showTimeRepository.findAll(pageable);
         return showTimeResponseList.map(showTimes -> convertToShowTimeResponse(showTimes));
@@ -100,6 +118,7 @@ public class ShowTimeService {
         showTime.setStartTime(request.getStartTime());
         showTime.setEndTime(request.getStartTime().plusMinutes(movie.getDuration()));
         showTime.setPrice(request.getPrice());
+        showTime.setStatus(ShowTime.Status.SAPCHIEU);
 
         return convertToShowTimeResponse(showTimeRepository.save(showTime));
     }
@@ -122,6 +141,7 @@ public class ShowTimeService {
         showTime.setStartTime(request.getStartTime());
         showTime.setEndTime(request.getStartTime().plusMinutes(movie.getDuration()));
         showTime.setPrice(request.getPrice());
+        showTime.setStatus(request.getStatus());
 
         return convertToShowTimeResponse(showTimeRepository.save(showTime));
     }
@@ -149,6 +169,7 @@ public class ShowTimeService {
                 .start_time(showTime.getStartTime())
                 .end_time(showTime.getEndTime())
                 .price(showTime.getPrice())
+                .status(showTime.getStatus())
                 .build();
     }
 }

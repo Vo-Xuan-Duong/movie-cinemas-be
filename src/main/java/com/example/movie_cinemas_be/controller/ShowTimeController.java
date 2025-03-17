@@ -7,8 +7,10 @@ import com.example.movie_cinemas_be.dtos.response.ShowTimeResponse;
 import com.example.movie_cinemas_be.service.ShowTimeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -28,6 +30,36 @@ public class ShowTimeController {
                 .build();
     }
 
+    @GetMapping("/filterShowtime")
+    public ResponseCustom<Page<ShowTimeResponse>> getAllShowTimeSFilter(
+            @RequestParam(value = "roomId", defaultValue = "0") long roomId,
+            @RequestParam(value = "date", required = false) LocalDate date,
+            Pageable pageable) {
+        if (roomId == 0 && date != null) {
+            return ResponseCustom.<Page<ShowTimeResponse>>builder()
+                    .data(showTimeService.getShowTimesByShowDate(date, pageable))
+                    .message("Success")
+                    .build();
+        }
+        else if (roomId != 0 && date == null) {
+            return ResponseCustom.<Page<ShowTimeResponse>>builder()
+                    .data(showTimeService.getAllShowTimesByRoomId(roomId, pageable))
+                    .message("Success ")
+                    .build();
+        } else if (roomId != 0 && date != null) {
+            return ResponseCustom.<Page<ShowTimeResponse>>builder()
+                    .data(showTimeService.getShowTimesByRoomIdAndShowDate(roomId, date, pageable))
+                    .message("Success ")
+                    .build();
+        }
+        else {
+            return ResponseCustom.<Page<ShowTimeResponse>>builder()
+                    .message("Failse ")
+                    .build();
+        }
+    }
+
+
     @GetMapping("/getByMovie/{movie_id}")
     public ResponseCustom<List<GroupedCinemaResponse>> getAllByMovieId(@PathVariable("movie_id") long movie_id) {
         return ResponseCustom.<List<GroupedCinemaResponse>>builder()
@@ -44,11 +76,19 @@ public class ShowTimeController {
                 .build();
     }
 
-    @GetMapping("/allShowTime")
+    @GetMapping("/allShowTimes")
     public ResponseCustom<Page<ShowTimeResponse>> getAllShowTimes(Pageable pageable) {
         return ResponseCustom.<Page<ShowTimeResponse>>builder()
                 .message("Success getAllShowTimes")
                 .data(showTimeService.getAllShowTimes(pageable))
+                .build();
+    }
+
+    @GetMapping("/searchShowtime")
+    public  ResponseCustom<Page<ShowTimeResponse>> getSearchShowTimes(@RequestParam("roomId") Long roomId, @RequestParam("showDate") LocalDate showDate, Pageable pageable) {
+        return ResponseCustom.<Page<ShowTimeResponse>>builder()
+                .message("Success getSearchShowTimes")
+                .data(showTimeService.getShowTimesByRoomIdAndShowDate(roomId, showDate , pageable))
                 .build();
     }
 

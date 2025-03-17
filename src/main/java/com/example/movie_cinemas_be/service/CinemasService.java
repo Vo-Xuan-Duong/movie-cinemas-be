@@ -34,6 +34,14 @@ public class CinemasService {
         return cinemas.map(cinemas1 -> convertCinemasToCinemaResponse(cinemas1));
     }
 
+    public List<CinemaResponse> getAllCinemas() {
+        List<Cinema> cinemas = cinemaRepository.findAll();
+        if (cinemas.isEmpty()) {
+            throw new CustomException(ErrorCode.CINEMA_NOT_FOUND);
+        }
+        return cinemas.stream().map(cinema -> convertCinemasToCinemaResponse(cinema)).collect(Collectors.toList());
+    }
+
     public CinemaResponse getCinemasById(long id) {
         return convertCinemasToCinemaResponse(cinemaRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.CINEMA_NOT_FOUND)));
     }
@@ -63,6 +71,7 @@ public class CinemasService {
     }
 
     public void deleteCinemas(long cinemas_id) {
+        roomService.deleteAllRoomsByCinema(cinemas_id);
         cinemaRepository.deleteById(cinemas_id);
     }
 

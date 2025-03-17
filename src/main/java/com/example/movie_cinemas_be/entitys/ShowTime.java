@@ -32,7 +32,16 @@ public class ShowTime {
     private LocalTime endTime;
     private double price;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     public ShowTime(long showtime_id){
         this.id = showtime_id;
+    }
+
+    public enum Status {
+        DACHIEU,
+        DANGCHIEU,
+        SAPCHIEU
     }
 }

@@ -1,5 +1,6 @@
 package com.example.movie_cinemas_be.dtos.request;
 
+import com.example.movie_cinemas_be.entitys.ShowTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +21,5 @@ public class ShowTimeRequest {
     private LocalDate showDate;
     private LocalTime startTime;
     private double price;
+    private ShowTime.Status status;
 }

@@ -45,11 +45,11 @@ public class RoomController {
                 .build();
     }
 
-    @PutMapping("/updateRoomByCinemaId/{cinema_id}")
-    public ResponseCustom<RoomResponse> updateRoom(@PathVariable Long cinema_id , @RequestBody RoomRequest roomRequest) {
+    @PutMapping("/update/{room_id}")
+    public ResponseCustom<RoomResponse> updateRoom(@PathVariable Long room_id , @RequestBody RoomRequest roomRequest) {
         return ResponseCustom.<RoomResponse>builder()
                 .message("Success update room ")
-                .data(roomService.updateRoom(roomRequest, cinema_id))
+                .data(roomService.updateRoom(roomRequest, room_id))
                 .build();
     }
 

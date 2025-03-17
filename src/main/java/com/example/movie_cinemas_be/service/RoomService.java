@@ -53,6 +53,14 @@ public class RoomService {
         return rooms.map(room -> convertToRoomResponse(room));
     }
 
+    public List<RoomResponse> getAllRoomByCinema(long cinemaId) {
+        List<Room> rooms = roomRepository.findAllByCinema_Id(cinemaId);
+        if (rooms.isEmpty()) {
+            throw new CustomException(ErrorCode.NO_DATA_IN_DATABASE);
+        }
+        return rooms.stream().map(room -> convertToRoomResponse(room)).collect(Collectors.toList());
+    }
+
     public  Page<RoomResponse> getAllRooms(Pageable pageable) {
         Page<Room> rooms = roomRepository.findAll(pageable);
         if (rooms.isEmpty()) {
@@ -76,13 +84,14 @@ public class RoomService {
         return convertToRoomResponse(room);
     }
 
-    public RoomResponse updateRoom(RoomRequest roomRequest, long cinemaId) {
-        Room newRoom = Room.builder()
-                .name(roomRequest.getRoom_name())
-                .capacity(roomRequest.getSeat_quantity())
-                .roomType(roomRequest.getRoom_type())
-                .cinema(cinemaRepository.findById(cinemaId).get())
-                .build();
+    public RoomResponse updateRoom(RoomRequest roomRequest, long roomId) {
+        Room newRoom = roomRepository.findById(roomId).get();
+        newRoom.setName(roomRequest.getRoom_name());
+        if (roomRequest.getSeat_quantity() != newRoom.getCapacity()) {
+            newRoom.setCapacity(roomRequest.getSeat_quantity());
+        }
+        newRoom.setRoomType(roomRequest.getRoom_type());
+        newRoom.setCreationDate(LocalDate.now());
         Room room = roomRepository.save(newRoom);
         dynamicRemoveAllSeatFromRoom(room.getId());
         dynamicAddSeatFromRoom(room, room.getCapacity());
@@ -92,6 +101,14 @@ public class RoomService {
     public void deleteRoom(long room_id) {
         dynamicRemoveAllSeatFromRoom(room_id);
         roomRepository.deleteById(room_id);
+    }
+
+    public void deleteAllRoomsByCinema(long cinemaId) {
+        List<Room> rooms = roomRepository.findAllByCinema_Id(cinemaId);
+        for (Room room : rooms) {
+            dynamicRemoveAllSeatFromRoom(room.getId());
+            roomRepository.delete(room);
+        }
     }
 
     public void dynamicAddSeatFromRoom(Room room, int numberSeat){

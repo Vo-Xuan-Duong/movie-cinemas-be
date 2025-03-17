@@ -30,4 +30,7 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
                 existsByRoomAndShowDateAndStartTimeLessThanAndEndTimeGreaterThan(room, showDate, end, start);
     }
 
+    Page<ShowTime> findShowTimeByRoom_IdAndShowDate(long roomId, LocalDate showDate, Pageable pageable);
+
+    Page<ShowTime> findShowTimeByShowDate(LocalDate showDate, Pageable pageable);
 }
